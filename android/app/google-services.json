@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "839955757699",
+    "project_id": "fakelogin-app",
+    "storage_bucket": "fakelogin-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:839955757699:android:4ef57d9fea3721548779b6",
+        "android_client_info": {
+          "package_name": "com.example.loginapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "839955757699-d7o9bdb8m99v5a2ql9bb9nocr6r6lit3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpuyMS9WOdHglf2LSIzkpuhoWSfXwzgao"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "839955757699-d7o9bdb8m99v5a2ql9bb9nocr6r6lit3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
