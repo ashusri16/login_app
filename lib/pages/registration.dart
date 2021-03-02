@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:loginapp/helpers/newtork_helper.dart';
+import 'package:loginapp/helpers/sharedpreferences_helper.dart';
+import 'package:loginapp/helpers/user_helper.dart';
 import 'package:loginapp/pages/local_widgets/custom_form_field.dart';
-import 'package:loginapp/pages/password_getter.dart';
+import 'package:loginapp/pages/local_widgets/scaffold_theme.dart';
+import 'package:loginapp/pages/otp_verification.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class Registration extends StatefulWidget {
@@ -16,66 +19,43 @@ class _RegistrationState extends State<Registration> {
   FirebaseAuth auth = FirebaseAuth.instance;
   var maskFormatter = new MaskTextInputFormatter(
       mask: '##-##-####', filter: {"#": RegExp(r'[0-9]')});
-  String firstName;
-  String lastName;
+  String name;
   String birthDate;
   String phNumber;
   String email;
+  String password;
+  String repassword;
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("User Registration"),
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 50,
-          ),
-          Form(
-            key: _formKey,
-            child: Column(
+      body: Builder(
+        builder: (BuildContext context) => SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: ScaffoldTheme(
+              isLoading: isLoading,
+              pageTitle: "SIGN UP",
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomFormField(
-                        fieldName: "name",
-                        onChanged: (value) {
-                          firstName = value;
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: CustomFormField(
-                        fieldName: "Surname",
-                        onChanged: (value) {
-                          lastName = value;
-                        },
-                      ),
-                    ),
-                  ],
-                ),
                 CustomFormField(
-                  fieldName: "DD - MM - YYYY (Date of Birth)",
+                  fieldName: "Name",
+                  prefixIcon: Icon(Icons.person),
                   onChanged: (value) {
-                    birthDate = value;
+                    name = value;
                   },
-                  inputFormatter: [
-                    LengthLimitingTextInputFormatter(10),
-                    maskFormatter,
-                  ],
                 ),
                 CustomFormField(
+                  prefixIcon: Icon(Icons.mail),
                   fieldName: "E-mail",
                   onChanged: (value) {
                     email = value;
                   },
                 ),
                 CustomFormField(
+                  prefixIcon: Icon(Icons.phone),
                   fieldName: "Ph-Number",
+                  keyboardType: TextInputType.phone,
                   onChanged: (value) {
                     phNumber = value;
                   },
@@ -83,41 +63,101 @@ class _RegistrationState extends State<Registration> {
                     LengthLimitingTextInputFormatter(10),
                     FilteringTextInputFormatter.digitsOnly,
                   ],
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.all(18.0),
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                height: 50,
-                width: 200,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  )),
-                  child: Text("Complete Registration"),
-                  onPressed: () async {
-                    if (_formKey.currentState.validate()) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => PasswordGetter(
-                          firstName: firstName,
-                          lastName: lastName,
-                          email: email,
-                          birthDate: birthDate,
-                          phNumber: phNumber,
-                        ),
-                      ));
-                    }
+                ),
+                CustomFormField(
+                  fieldName: "Password",
+                  prefixIcon: Icon(Icons.lock),
+                  obscureText: true,
+                  onChanged: (value) {
+                    password = value;
                   },
                 ),
+                CustomFormField(
+                  fieldName: "Confirm Password",
+                  prefixIcon: Icon(Icons.lock),
+                  obscureText: true,
+                  onChanged: (value) {
+                    repassword = value;
+                  },
+                ),
+              ],
+              buttonTitle: "Sign Up",
+              onPressed: () async {
+                if (name == null ||
+                    phNumber == null ||
+                    email == null ||
+                    password == null ||
+                    repassword == null) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("Please fill all fields"),
+                  ));
+                } else if (password != repassword) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("passwords don't match, Please try again"),
+                  ));
+                } else if (phNumber.length != 10) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("Please enter a valid Phone number"),
+                  ));
+                } else {
+                  await Connection.isConnected().then((value) async {
+                    if (value) {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      try {
+                        UserCredential usercredentail = await Users.createUser(
+                            email: email, password: password);
+                        await SharedPreferencesHelper.setString(
+                            'token', usercredentail.user.uid);
+                        await Users.setUserInfo(
+                            documentID: usercredentail.user.uid,
+                            displayName: name,
+                            phNumber: phNumber,
+                            email: email);
+                        await Users.verifyNumber(phNumber);
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => OTPVerification(
+                                  phNumber: phNumber,
+                                )));
+                      } catch (e) {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text(e.toString()),
+                        ));
+                      }
+                    } else {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text("No Network Connection"),
+                      ));
+                    }
+                  });
+                }
+              },
+              bottomLink: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Already have an account? ",
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  GestureDetector(
+                    child: Text(
+                      "LOGIN",
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                    onTap: () {
+                      Navigator.of(context).popAndPushNamed('/loginPage');
+                    },
+                  )
+                ],
               ),
             ),
-          )
-        ],
+          ),
+        ),
       ),
     );
   }

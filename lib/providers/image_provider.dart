@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-class ImageProvider extends ChangeNotifier {
+class ImageStateProvider extends ChangeNotifier {
   String currentStatus = "initial";
   void loading() {
     currentStatus = 'loading';

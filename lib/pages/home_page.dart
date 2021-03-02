@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:loginapp/helpers/newtork_helper.dart';
 import 'package:loginapp/helpers/sharedpreferences_helper.dart';
 import 'package:loginapp/helpers/user_helper.dart';
-import 'package:loginapp/pages/dashboard.dart';
+
+import 'dash_board/dashboard.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -18,7 +19,9 @@ class HomePage extends StatelessWidget {
         }
         return Scaffold(
           body: Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.grey,
+            ),
           ),
         );
       },
