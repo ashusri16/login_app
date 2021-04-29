@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loginapp/helpers/sharedpreferences_helper.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:loginapp/providers/image_provider.dart';
 import 'package:provider/provider.dart';
 
 class Users {
@@ -101,28 +100,5 @@ class Users {
   }
 
   static Future<void> addProfilePicture(
-      BuildContext context, PickedFile photo) async {
-    File file = File(photo.path);
-    try {
-      print("before loading...");
-      Provider.of<ImageStateProvider>(context, listen: false).loading();
-      print("loading...");
-      await storage
-          .ref('profiles/new_upload')
-          .putFile(file)
-          .then((value) async {
-        String url = await value.ref.getDownloadURL();
-        print(url);
-        String documentId = await SharedPreferencesHelper.getString('token');
-        await users.doc(documentId).update({
-          'profileUrl': url,
-        });
-
-        Provider.of<ImageStateProvider>(context, listen: false).loaded();
-      });
-    } catch (e) {
-      print(e);
-    }
-    print('fileUploaded');
-  }
+      BuildContext context, PickedFile photo) async {}
 }

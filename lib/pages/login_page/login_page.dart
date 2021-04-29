@@ -3,10 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loginapp/helpers/newtork_helper.dart';
 import 'package:loginapp/helpers/sharedpreferences_helper.dart';
 import 'package:loginapp/helpers/user_helper.dart';
-import 'package:loginapp/pages/home_page.dart';
 import 'package:loginapp/pages/local_widgets/custom_form_field.dart';
 import 'package:loginapp/pages/local_widgets/scaffold_theme.dart';
-import 'package:loginapp/pages/registration.dart';
 import 'package:loginapp/utils/colors.dart';
 
 String email = "";

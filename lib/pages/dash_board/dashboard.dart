@@ -1,19 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:loginapp/helpers/list_helper.dart';
-import 'package:loginapp/helpers/user_helper.dart';
 import 'package:loginapp/pages/dash_board/drawer.dart';
-import 'package:loginapp/pages/dash_board/page_views/about_us.dart';
-import 'package:loginapp/pages/dash_board/page_views/itemlist.dart';
-import 'package:loginapp/pages/dash_board/page_views/my_documents.dart';
-import 'package:loginapp/pages/dash_board/page_views/policy.dart';
 import 'package:loginapp/pages/dash_board/page_views/profile.dart';
-import 'package:loginapp/pages/local_widgets/custom_tile.dart';
-import 'package:loginapp/pages/local_widgets/profile_pic_widget.dart';
-import 'package:loginapp/providers/image_provider.dart';
-import 'package:loginapp/providers/size_provider.dart';
 import 'package:loginapp/utils/colors.dart';
-import 'package:path/path.dart';
-import 'package:provider/provider.dart';
 
 class DashBoard extends StatefulWidget {
   final AsyncSnapshot snapshot;
@@ -31,7 +19,7 @@ class _DashBoardState extends State<DashBoard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    pageController = PageController(initialPage: 6);
+    pageController = PageController(initialPage: 2);
   }
 
   @override
@@ -55,20 +43,11 @@ class _DashBoardState extends State<DashBoard> {
             Profile(
               snapshot: widget.snapshot,
             ),
-            AboutUs(),
-            Policy(),
-            MyDocuments(),
             Container(
               color: MyColors.primaryColor.withOpacity(0.2),
             ),
             Container(
               color: MyColors.primaryColor.withOpacity(0.4),
-            ),
-            MultiProvider(
-              providers: [
-                ChangeNotifierProvider(create: (_) => SizeProvider()),
-              ],
-              builder: (BuildContext newContext, child) => ItemList(),
             ),
             Container(
               color: MyColors.primaryColor.withOpacity(0.6),
@@ -83,15 +62,15 @@ class _DashBoardState extends State<DashBoard> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: currentIndex,
           onTap: (pageNo) {
-            pageController.jumpToPage(pageNo + 4);
+            pageController.jumpToPage(pageNo);
             setState(() {
               currentIndex = pageNo;
             });
           },
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: "Cart",
+              icon: Icon(Icons.person),
+              label: "profile",
             ),
             BottomNavigationBarItem(
                 icon: Icon(Icons.label_important_outline), label: "page"),
